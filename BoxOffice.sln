@@ -1,0 +1,27 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoreApi", "CoreApi\CoreApi.csproj", "{78D9AB73-211F-4F2F-A110-5EEBFBC3C565}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoreApiTests", "CoreApiTests\CoreApiTests.csproj", "{90C75890-D314-4376-94EB-47FCE47C75F3}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{97955D41-335D-43C5-A07F-76A3A7C00D8C}"
+	ProjectSection(SolutionItems) = preProject
+		Solution Items\MovieRepository.dll = Solution Items\MovieRepository.dll
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{78D9AB73-211F-4F2F-A110-5EEBFBC3C565}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{78D9AB73-211F-4F2F-A110-5EEBFBC3C565}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{78D9AB73-211F-4F2F-A110-5EEBFBC3C565}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{78D9AB73-211F-4F2F-A110-5EEBFBC3C565}.Release|Any CPU.Build.0 = Release|Any CPU
+		{90C75890-D314-4376-94EB-47FCE47C75F3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{90C75890-D314-4376-94EB-47FCE47C75F3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{90C75890-D314-4376-94EB-47FCE47C75F3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{90C75890-D314-4376-94EB-47FCE47C75F3}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
