@@ -15,28 +15,40 @@ public class MoviesController : ControllerBase
     [HttpGet]
     public Movie[] Get()
     {
-        var movies = JsonSerializer.Deserialize<Movie[]>(MovieRepo.Get());
-        return movies.ToArray();
+        return JsonSerializer.Deserialize<Movie[]>(MovieRepo.Get());
     }
     
     [HttpGet("{id}")]
     public Movie Get(Guid id)
     {
-        var movies = JsonSerializer.Deserialize<Movie[]>(MovieRepo.Get()).ToList();
-        return movies.First(movie => movie.Id == id);
+        return Get_(id);
     }
-    
+
     [HttpPut]
     public Movie Put([FromBody] Movie movie)
     {
-        throw new NotImplementedException();
+        var item = JsonSerializer.Serialize<Movie>(movie);
+        MovieRepo.Put(item);
+        return movie;
     }
 
+    [HttpPost]
     public Movie Rate(Guid id, int rating)
     {
-        throw new NotImplementedException();
+        if (id == Guid.Empty)
+        { return null; }
+        else if (rating < 0 || rating > 10)
+        { return null; }
+        else
+        {
+            var item = Get_(id);
+            if (item == null)
+                return null;
+            item.Rating = rating;
+            return item;
+        }
     }
-    
+
     [HttpGet("[action]/{query}")]
     public Movie Search(string query)
     {
@@ -49,6 +61,13 @@ public class MoviesController : ControllerBase
     {
         var moviesService = new MovieService();
         return moviesService.SearchByGenre(query);
+    }
+
+    private static Movie Get_(Guid id)
+    {
+        var movies = JsonSerializer.Deserialize<Movie[]>(MovieRepo.Get()).ToList();
+        var movie = movies.FirstOrDefault(movie => movie.Id == id);
+        return movie;
     }
 
 }

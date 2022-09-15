@@ -10,15 +10,20 @@ public class MovieService : IMovieService
     
     public Movie Search(string query)
     {
+        if (query == null)
+            return null;
+
+        //Kanske snabbare med json query och sånt istället för DeserializeObject på allt
         var movies = JsonConvert.DeserializeObject<Movie[]>(MovieRepo.Get()).ToList();
-        var movie = movies.First(q => q.Title.Contains(query));
+        var movie = movies.FirstOrDefault(q => q.Title?.ToLower().Contains(query.ToLower()) ?? false);
         return movie;
     }
 
     public Movie[] SearchByGenre(string[] query)
     {
         var movies = JsonConvert.DeserializeObject<Movie[]>(MovieRepo.Get());
-        movies = movies.Where(q => q.Genre.Contains(query[0])).ToArray();
+        movies = movies.Where(m =>
+            query.All(q => m.Genre?.Contains(q) ?? false)).ToArray();
         return movies;
     }
 }

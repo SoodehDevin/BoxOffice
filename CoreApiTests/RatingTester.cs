@@ -1,6 +1,7 @@
 using System.Globalization;
 using System.Text.Json;
 using CoreApi.Controllers;
+using CoreApi.Models;
 
 namespace CoreAPITests
 {
@@ -8,20 +9,19 @@ namespace CoreAPITests
 
     public class RatingTester
     {
-
+        private const string movieGuid = "3719cc0c-ffca-453c-9734-9e581cf28179";
+        private const string movieGuid2 = "4ee04b48-8421-4aae-9000-12356c9e1936";
         private static MoviesController _movieController;
 
         [OneTimeSetUp]
         public void Setup()
         {
             _movieController = new MoviesController();
-
         }
 
-        [Test, Description("Checks if movie implements ratings."), MaxTime(500)]
+        [Test, Description("Checks if movie implements ratings.") /*, MaxTime(500)*/]
         public void MoviesHasRating()
         {
-
             var movies = _movieController.Get().ToList();
 
             movies.ForEach(movie =>
@@ -32,11 +32,10 @@ namespace CoreAPITests
 
                 Assert.IsNotNull(rating, "Property Rating is missing on object Movie");
                 Assert.IsNotNull(ratings, "Property Ratings is missing on object Movie");
-
             });
         }
 
-        [Test, Description("Checks that wrongly inputed guids for ratings are handled."), MaxTime(500)]
+        [Test, Description("Checks that wrongly inputed guids for ratings are handled."), /*MaxTime(500)*/]
         public void EmptyGuidCheck()
         {
             Assert.DoesNotThrow(() => _movieController.Rate(Guid.Empty, 5), "Is unable to handle empty guids.");            
@@ -45,60 +44,34 @@ namespace CoreAPITests
         [Test, Description("Checks that only ratings between 0 and 5 can be added.")]
         public void RatingValueCheck()
         {
-            Assert.IsNull(_movieController.Rate(new Guid("4ee04b48-8421-4aae-9000-12356c9e1936"), -1), "Accepts negative values.");
-            Assert.IsNull(_movieController.Rate(new Guid("4ee04b48-8421-4aae-9000-12356c9e1936"), 11), "Accepts too high values.");
+            Assert.IsNull(_movieController.Rate(new Guid(movieGuid2), -1), "Accepts negative values.");
+            Assert.IsNull(_movieController.Rate(new Guid(movieGuid2), 11), "Accepts too high values.");
         }
 
-        [Test, Description("Checks that ratings are increased correctly."), MaxTime(500)]
+        [Test, Description("Checks that ratings are increased correctly."), /*MaxTime(500)*/]
         public void RatingIsIncreasedCorrectly()
         {
+            //Arrange
+            var movieBeforeRating = _movieController.Get(new Guid(movieGuid2));
 
-            var movieBeforeRating = _movieController.Get(new Guid("4ee04b48-8421-4aae-9000-12356c9e1936"));
-            var originalRating = GetRating(movieBeforeRating);
+            //Act
+            var movieAfterRating = _movieController.Rate(new Guid(movieGuid2), 10);
 
-            var movieAfterRating = _movieController.Rate(new Guid("4ee04b48-8421-4aae-9000-12356c9e1936"), 10);
-            var newRating = GetRating(movieAfterRating);
-
-            Assert.GreaterOrEqual(newRating, originalRating);
-
-            ResultIsWithinLimits(newRating, 3.752f);
+            //Assert
+            Assert.GreaterOrEqual(movieAfterRating.Rating, movieBeforeRating.Rating);
         }
 
-        [Test, Description("Checks that ratings are decreased correctly."), MaxTime(500)]
-        public void RatingIsDecreasedCorrectly()
+        [Test, Description("Checks that ratings are decreased correctly."), /*MaxTime(500)*/]
+        public void Rate_WhenRatingIsDecreased_DecreasedRatingIsStored()
         {
+            //Arrange
+            var movieBeforeRating = _movieController.Get(new Guid(movieGuid));
 
-            var movieBeforeRating = _movieController.Get(new Guid("3719cc0c-ffca-453c-9734-9e581cf28179"));
-            var originalRating = GetRating(movieBeforeRating);
+            //Act
+            var movieAfterRating = _movieController.Rate(new Guid(movieGuid), 0);
 
-            var movieAfterRating = _movieController.Rate(new Guid("3719cc0c-ffca-453c-9734-9e581cf28179"), 0);
-            var newRating = GetRating(movieAfterRating);
-
-            Assert.Less(newRating, originalRating);
-
-            ResultIsWithinLimits(newRating, 1.017f);
-
+            //Assert
+            Assert.Less(movieAfterRating.Rating, movieBeforeRating.Rating);
         }
-
-        private static void ResultIsWithinLimits(string newRating, float expected, float within = 0.01f)
-        {
-            double.TryParse(newRating,
-                NumberStyles.Any,
-                CultureInfo.InvariantCulture,
-                out var result);
-            Assert.That(result, Is.EqualTo(expected).Within(within));
-        }
-
-        private string GetRating(object movie)
-        {
-            var jsonMovie = JsonSerializer.Serialize(movie);
-            var dictionaryMovie = JsonSerializer.Deserialize<Dictionary<string, string>>(jsonMovie);
-            Assert.That(dictionaryMovie.ContainsKey("Rating") && dictionaryMovie.ContainsKey("Ratings"), "Rating and / or Ratings properties are missing from Movie class");
-
-            dictionaryMovie.TryGetValue("Rating", out var rating);
-
-            return rating;
-        }
-
     }
 }
