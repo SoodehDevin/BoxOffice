@@ -33,7 +33,7 @@ namespace CoreAPITests
         }
 
         [Test, Description("Should find a movie with the title 'George of the Jungle'. Tests for movies with similar names."),
-            /*MaxTime(500)*/]
+            MaxTime(500)]
         public void SearchForGeorgeOfTheJungle()
         {
             var title = "George of the Jungle";

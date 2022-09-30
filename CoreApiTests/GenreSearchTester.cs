@@ -15,7 +15,7 @@ namespace CoreAPITests
             _movieController = new MoviesController();
         }
 
-        [Test, Description("Should find a list of movies with the genre 'Drama'"), /*MaxTime(500)*/]
+        [Test, Description("Should find a list of movies with the genre 'Drama'"), MaxTime(500)]
         public void SearchByGenre_WhenMoviesWithGenreDramaExists_ReturnsAllMoviesForTheDrama()
         { 
             //Arrange
@@ -30,7 +30,7 @@ namespace CoreAPITests
             Assert.Greater(movies.Length, 0, $"Unable to find any movies with the {genre} genre");
         }
 
-        [Test, Description("Should find at least 20 movies with the Action and Crime genres."), /*MaxTime(500)*/]
+        [Test, Description("Should find at least 20 movies with the Action and Crime genres."), MaxTime(500)]
         public void SearchForActionAndCrime()
         {
             var genres = new string[] { "Crime", "Action" };

@@ -15,7 +15,7 @@ namespace CoreAPITests
 
         }
 
-        [Test, Description("Should return all movies in the repository in a timly manner"), /*MaxTime(500)*/]
+        [Test, Description("Should return all movies in the repository in a timly manner"), MaxTime(500)]
         public void Get()
         {
             var movies = _movieController.Get();
@@ -32,7 +32,7 @@ namespace CoreAPITests
             Assert.AreEqual(id, result.Id);
         }
 
-        [Test, Description("Should find a movie with the id 'dd258617-aa5d-4c21-b781-6f32053aeb6d'"), /*MaxTime(500)*/]
+        [Test, Description("Should find a movie with the id 'dd258617-aa5d-4c21-b781-6f32053aeb6d'"), MaxTime(500)]
 
         public void GetMovie2()
         {

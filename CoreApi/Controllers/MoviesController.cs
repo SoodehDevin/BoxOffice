@@ -1,8 +1,8 @@
 using System.Text.Json;
 using CoreApi.Models;
-using CoreApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using MovieRepository;
+using Newtonsoft.Json.Linq;
 
 namespace CoreApi.Controllers;
 
@@ -10,14 +10,22 @@ namespace CoreApi.Controllers;
 [ApiController]
 public class MoviesController : ControllerBase
 {
-    private static readonly IMovieRepo MovieRepo = new MovieRepo();
-    
+    private static List<Movie> Movies;
+
+    private static readonly IMovieRepo MovieRepo;
+
+    static MoviesController()
+    {
+        MovieRepo = new MovieRepo(); 
+        Movies = LoadAllRepoMovies_();
+    }
+
     [HttpGet]
     public Movie[] Get()
     {
-        return JsonSerializer.Deserialize<Movie[]>(MovieRepo.Get());
+        return Movies.ToArray();
     }
-    
+
     [HttpGet("{id}")]
     public Movie Get(Guid id)
     {
@@ -29,11 +37,13 @@ public class MoviesController : ControllerBase
     {
         var item = JsonSerializer.Serialize<Movie>(movie);
         MovieRepo.Put(item);
+        Movies.Add(movie);
+
         return movie;
     }
 
     [HttpPost]
-    public Movie Rate(Guid id, int rating)
+    public Movie Rate(Guid id, float rating)
     {
         if (id == Guid.Empty)
         { return null; }
@@ -52,22 +62,30 @@ public class MoviesController : ControllerBase
     [HttpGet("[action]/{query}")]
     public Movie Search(string query)
     {
-        var moviesService = new MovieService();
-        return moviesService.Search(query);
+        if (query == null)
+            return null;
+
+        var movie = Movies.FirstOrDefault(q => q.Title?.ToLower().Contains(query.ToLower()) ?? false);
+        return movie;
+ 
     }
 
     [HttpGet("[action]/{query}")]
     public Movie[] SearchByGenre(string[] query)
     {
-        var moviesService = new MovieService();
-        return moviesService.SearchByGenre(query);
+        var movies = Movies.Where(m =>
+            query.All(q => m.Genre?.Contains(q) ?? false)).ToArray();
+        return movies;
+    }
+
+    private static List<Movie> LoadAllRepoMovies_()
+    {
+        return JsonSerializer.Deserialize<List<Movie>>(MovieRepo.Get());
     }
 
     private static Movie Get_(Guid id)
     {
-        var movies = JsonSerializer.Deserialize<Movie[]>(MovieRepo.Get()).ToList();
-        var movie = movies.FirstOrDefault(movie => movie.Id == id);
+        var movie = Movies.FirstOrDefault(movie => movie.Id == id);
         return movie;
     }
-
 }
